@@ -1,2 +1,3 @@
 # coding-practice
-coding practice repo
+coding practice repo, place to store simple
+practice coding projects
