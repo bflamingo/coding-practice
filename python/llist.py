@@ -53,8 +53,29 @@ class LinkedList:
 		penult.nextNode = None
 		return popped
 
-	def traverse(self, idx):
-		following = self.head
+	def insert(self, data, idx):
+		if self.head is None:
+			if idx == 0:
+				self.prepend(Node(data))
+				return
+			else:
+				raise ValueError("Index out of bounds (list is empty)")
+
+		current_idx = 0
+		current_node = self.head
+
+		while current_idx < idx:
+			if current_node.nextNode is None:
+				raise ValueError("Insertion index out of bound (over max index)")
+			current_node = current_node.nextNode
+			current_idx += 1
+
+		## Do the insertion (lol)
+		newNode = Node(data)
+		newNode.nextNode = current_node.nextNode
+		current_node.nextNode = newNode
+		return
+
 		
 
 
@@ -159,6 +180,53 @@ class TestLinkedList(unittest.TestCase):
 
 		self.assertEqual(poppedTail.data, 3)
 		self.assertEqual(self.llist.head, Node(1,Node(2)))
+
+	def test_insert_ListIsEmptyAndIndexIsZero(self):
+		self.llist.insert(1,0)
+
+		self.assertEqual(self.llist.head.data, Node(1))
+
+	def test_insert_ListIsEmptyAndIndexIsInvalid(self):
+		inserted = True
+		try:
+			self.llist.insert(1,1)
+		except ValueError:
+			inserted = False
+
+		self.assertFalse(inserted)
+
+	def test_insert_InsertBetweenTwoNodes(self):
+		self.llist.append(1)
+		self.llist.append(3)
+		self.llist.insert(2,0)
+
+		self.assertEqual(self.llist.head.data, 1)
+		self.assertEqual(self.llist.head.nextNode.data, 2)
+		self.assertEqual(self.llist.head.nextNode.nextNode.data, 3)
+
+	def test_insert_NonemptyListIndexOutOfBounds(self):
+		self.llist.append(0)
+		self.llist.append(1)
+
+		inserted = True
+		try:
+			self.llist.insert(2,2)
+		except ValueError:
+			inserted = False
+
+		self.assertFalse(inserted)
+
+	def test_insert_NonemptyListInsertAtTail(self):
+		self.llist.append(0)
+		self.llist.append(1)
+		self.llist.append(2)
+
+		self.llist.insert(3,2)
+
+		self.assertEqual(self.llist.head.data, 0)
+		self.assertEqual(self.llist.head.nextNode.data, 1)
+		self.assertEqual(self.llist.head.nextNode.nextNode.data, 2)
+		self.assertEqual(self.llist.head.nextNode.nextNode.nextNode.data, 3)
 
 
 
