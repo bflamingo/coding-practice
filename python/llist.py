@@ -54,12 +54,15 @@ class LinkedList:
 		return popped
 
 	def insert(self, data, idx):
+		""" Insert after node in position idx (inserted node is at idx+1). """
+		if idx < 0:
+			raise ValueError("Index must be a positive integer (incl. 0)")
 		if self.head is None:
 			if idx == 0:
 				self.prepend(Node(data))
 				return
 			else:
-				raise ValueError("Index out of bounds (list is empty)")
+				raise ValueError("Insertion index out of bounds (list is empty)")
 
 		current_idx = 0
 		current_node = self.head
@@ -74,6 +77,40 @@ class LinkedList:
 		newNode = Node(data)
 		newNode.nextNode = current_node.nextNode
 		current_node.nextNode = newNode
+		return
+
+	def remove(self, idx):
+		""" remove node in position idx """
+		if idx < 0:
+			raise ValueError("Index must be a positive integer (incl. 0)")
+		if self.head is None:
+			raise ValueError("Cannot remove from empty linked list")
+		if self.head.nextNode is None:
+			if idx == 0:
+				self.head = None
+				return
+			else:
+				raise ValueError("Removal index out of bound (over max index")
+
+		current_idx = 0
+		current_node = self.head
+
+		while current_idx < idx-1:
+			if current_node.nextNode is None:
+				raise ValueError("Removal index out of bound (over max index)")
+			current_node = current_node.nextNode
+			current_idx += 1
+
+		## Arrived at node directly before target, need to check
+		## that target node exists
+		if current_node.nextNode is None:
+			raise ValueError("Removal index out of bound (over max index)")
+
+		delete_node = current_node.nextNode
+		new_next = current_node.nextNode.nextNode
+		current_node.nextNode = new_next
+		delete_node = None
+
 		return
 
 		
@@ -227,6 +264,37 @@ class TestLinkedList(unittest.TestCase):
 		self.assertEqual(self.llist.head.nextNode.data, 1)
 		self.assertEqual(self.llist.head.nextNode.nextNode.data, 2)
 		self.assertEqual(self.llist.head.nextNode.nextNode.nextNode.data, 3)
+
+	def test_insert_NegativeIndexError(self):
+		try:
+			self.llist.insert(-1)
+		except ValueError:
+
+
+	def test_remove_EmptyListThrowsException(self):
+		deleted = True
+		try:
+			self.llist.remove(0)
+		except ValueError:
+			deleted = False
+
+		self.assertFalse(deleted)
+
+	def test_remove_NonEmptyListIndexOutOfBounds(self):
+		deleted = True
+		self.llist.append(0)
+		self.llist.append(1)
+
+		try:
+			self.llist.remove(2)
+		except ValueError:
+			deleted = False
+
+		self.assertFalse(deleted)
+		self.assertEqual(self.llist.head.data, 0)
+		self.assertEqual(self.llist.head.nextNode.data, 1)
+
+	def test_remove
 
 
 
