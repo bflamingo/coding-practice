@@ -2,7 +2,7 @@ import unittest
 
 ## Classes
 class Node:
-	def __init__(self, data, nextNode = None):
+	def __init__(self, data, nextNode=None):
 		self.data = data
 		self.nextNode = nextNode
 
@@ -14,6 +14,20 @@ class Node:
 			return (self.data == other.data and self.nextNode == other.nextNode)
 		else:
 			return False
+
+
+class DoubleNode:
+	def __init__(self, data, nextNode=None, prevNode=None):
+		self.data = data
+		self.nextNode = nextNode
+		self.prevNode = nextNode
+
+	def __eq__(self, other):
+		if isinstance(other, self.__class__):
+			return (self.data == other.data and 
+				self.nextNode = other.nextNode and 
+				self.prevNode = other.prevNode
+				)
 
 
 class LinkedList:
@@ -114,7 +128,14 @@ class LinkedList:
 		return
 
 		
+class DoublyLinkedList(LinkedList):
+	def __init__(self):
+		self.head = None
+		self.tail = None
 
+	def append(self, data):
+
+	def popTail(self):
 
 
 
@@ -267,9 +288,11 @@ class TestLinkedList(unittest.TestCase):
 
 	def test_insert_NegativeIndexError(self):
 		try:
-			self.llist.insert(-1)
+			self.llist.insert(0,-1)
 		except ValueError:
+			return
 
+		self.fail()
 
 	def test_remove_EmptyListThrowsException(self):
 		deleted = True
@@ -294,7 +317,48 @@ class TestLinkedList(unittest.TestCase):
 		self.assertEqual(self.llist.head.data, 0)
 		self.assertEqual(self.llist.head.nextNode.data, 1)
 
-	def test_remove
+	def test_remove_JustHead(self):
+		self.llist.append(0)
+		self.llist.remove(0)
+
+		self.assertEqual(self.llist.head, None)
+
+	def test_remove_NegativeIndex(self):
+		self.llist.append(0)
+		self.llist.append(1)
+
+		removed = True
+		try:
+			self.llist.remove(-1)
+		except ValueError:
+			removed = False
+
+		self.assertFalse(removed)
+
+	def test_remove_LastNode(self):
+		self.llist.append(0)
+		self.llist.append(1)
+		self.llist.append(2)
+
+		self.llist.remove(2)
+
+		self.assertEqual(self.llist.head.data, 0)
+		self.assertEqual(self.llist.head.nextNode.data, 1)
+		self.assertEqual(self.llist.head.nextNode.nextNode, None)
+
+	def test_remove_MiddleNode(self):
+		self.llist.append('A')
+		self.llist.append('B')
+		self.llist.append('C')
+
+		self.llist.remove(1)
+
+		self.assertEqual(self.llist.head.data, 'A')
+		self.assertEqual(self.llist.head.nextNode.data, 'C')
+		self.assertEqual(self.llist.head.nextNode.nextNode, None)
+
+
+
 
 
 
