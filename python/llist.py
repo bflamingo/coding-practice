@@ -159,7 +159,10 @@ class DoublyLinkedList:
 
 		popped = self.tail
 		self.tail = self.tail.prevNode
-		if self.tail != None:
+
+		if self.tail == None:
+			self.head = self.tail
+		else:
 			self.tail.nextNode = None
 		return popped
 
@@ -169,7 +172,10 @@ class DoublyLinkedList:
 
 		popped = self.head
 		self.head = self.head.nextNode
-		if self.head != None:
+
+		if self.head == None:
+			self.tail = self.head
+		else:
 			self.head.prevNode = None
 		return popped
 
@@ -179,7 +185,7 @@ class DoublyLinkedList:
 			raise ValueError("Index must be a positive integer (incl. 0)")
 		if self.head is None:
 			if idx == 0:
-				self.prepend(DoubleNode(data))
+				self.prepend(data)
 				return
 			else:
 				raise ValueError("Insertion index out of bounds (list is empty)")
@@ -192,6 +198,10 @@ class DoublyLinkedList:
 				raise ValueError("Insertion index out of bound (over max index)")
 			current_node = current_node.nextNode
 			current_idx += 1
+
+		if current_node == self.tail:
+			self.append(data)
+			return
 
 		## Do the insertion (lol)
 		newNode = DoubleNode(data, current_node.nextNode, current_node)
@@ -208,6 +218,7 @@ class DoublyLinkedList:
 		if self.head.nextNode is None:
 			if idx == 0:
 				self.head = None
+				self.tail = None
 				return
 			else:
 				raise ValueError("Removal index out of bound (over max index")
@@ -227,10 +238,17 @@ class DoublyLinkedList:
 			raise ValueError("Removal index out of bound (over max index)")
 
 		delete_node = current_node.nextNode
-		new_next = current_node.nextNode.nextNode
-		new_next.prevNode = current_node
-		current_node.nextNode = new_next
-		delete_node = None
+		
+		if current_node.nextNode == self.tail:
+			current_node.nextNode = None
+			self.tail = current_node
+			delete_node = None
+		else:
+			new_next = current_node.nextNode.nextNode
+			new_next.prevNode = current_node
+			current_node.nextNode = new_next
+			delete_node = None
+
 		return
 
 
@@ -639,12 +657,12 @@ class TestDoublyLinkedList(unittest.TestCase):
 
 		self.assertEqual(self.llist.head.prevNode, None)
 		self.assertEqual(self.llist.head.data, 1)
-		self.assertEqual(self.llist.head.nextNode.data, 3)
-		self.assertEqual(self.llist.head.nextNode.nextNode.data, 2)
+		self.assertEqual(self.llist.head.nextNode.data, 2)
+		self.assertEqual(self.llist.head.nextNode.nextNode.data, 3)
 
 		self.assertEqual(self.llist.tail.nextNode, None)
-		self.assertEqual(self.llist.tail.data, 2)
-		self.assertEqual(self.llist.tail.prevNode.data, 3)
+		self.assertEqual(self.llist.tail.data, 3)
+		self.assertEqual(self.llist.tail.prevNode.data, 2)
 		self.assertEqual(self.llist.tail.prevNode.prevNode.data, 1)
 
 	def test_insert_NonemptyListIndexOutOfBounds(self):
