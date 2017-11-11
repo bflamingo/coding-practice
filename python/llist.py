@@ -69,6 +69,23 @@ class LinkedList:
 		penult.nextNode = None
 		return popped
 
+	def traverse(self,idx):
+		if idx < 0:
+			raise ValueError("Index must be a positive integer (incl. 0)")
+		if self.head is None:
+			raise ValueError("List is empty")
+
+		current_idx = 0
+		current_node = self.head
+
+		while current_idx < idx:
+			if current_node.nextNode == None:
+				raise ValueError("Index out of bounds")
+			current_node = current_node.nextNode
+			current_idx += 1
+
+		return current_node
+
 	def insert(self, data, idx):
 		""" Insert after node in position idx (inserted node is at idx+1). """
 		if idx < 0:
@@ -80,16 +97,7 @@ class LinkedList:
 			else:
 				raise ValueError("Insertion index out of bounds (list is empty)")
 
-		current_idx = 0
-		current_node = self.head
-
-		while current_idx < idx:
-			if current_node.nextNode is None:
-				raise ValueError("Insertion index out of bound (over max index)")
-			current_node = current_node.nextNode
-			current_idx += 1
-
-		## Do the insertion (lol)
+		current_node = self.traverse(idx)
 		newNode = Node(data)
 		newNode.nextNode = current_node.nextNode
 		current_node.nextNode = newNode
@@ -108,14 +116,7 @@ class LinkedList:
 			else:
 				raise ValueError("Removal index out of bound (over max index")
 
-		current_idx = 0
-		current_node = self.head
-
-		while current_idx < idx-1:
-			if current_node.nextNode is None:
-				raise ValueError("Removal index out of bound (over max index)")
-			current_node = current_node.nextNode
-			current_idx += 1
+		current_node = self.traverse(idx-1)
 
 		## Arrived at node directly before target, need to check
 		## that target node exists
@@ -128,6 +129,27 @@ class LinkedList:
 		delete_node = None
 
 		return
+
+	def reverseInPlace(self, left, right):
+		""" Reverse contiguous chunk of a linked list
+
+			Inputs:
+			left - index of the beginning position of sublist to reverse
+			right - index of the end position of sublist to reverse
+		"""
+
+		if left > right:
+			raise ValueError("Left index should not exceed right index.")
+		if left == right:
+			return
+		if self.head is None:
+			return
+		if left < 0 or right < 0:
+			raise ValueError("Indices should be nonnegative integers")
+
+
+
+
 
 		
 class DoublyLinkedList:
@@ -781,7 +803,7 @@ if __name__ == '__main__':
 	suite1 = unittest.TestLoader().loadTestsFromTestCase(TestLinkedList)
 	suite2 = unittest.TestLoader().loadTestsFromTestCase(TestDoublyLinkedList)
 	# suite = unittest.TestSuite([suite1, suite2])
-	suite = suite2
+	suite = suite1
 	# suite = unittest.TestSuite()
 	# suite.addTest(TestDoublyLinkedList('test_append_nonempty_1'))
 	runner = unittest.TextTestRunner(verbosity=2)
