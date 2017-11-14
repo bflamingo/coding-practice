@@ -22,6 +22,27 @@ class LListStack:
 			return self.linklist.head.data
 
 
+class DLListQueue:
+	def __init__(self):
+		self.dlinklist = llist.DoublyLinkedList()
+
+	def enqueue(self, data):
+		self.dlinklist.append(data)
+		return None
+
+	def dequeue(self):
+		if self.dlinklist.head is None:
+			return None
+		else:
+			return self.dlinklist.popHead().data
+
+	def peek(self):
+		if self.dlinklist.head is None:
+			return None
+		else:
+			return self.dlinklist.head.data
+
+
 class StackQueue:
 	def __init__(self):
 		self.stack1 = LListStack()
@@ -105,33 +126,38 @@ class TestLListStack(unittest.TestCase):
 
 class TestStackQueue(unittest.TestCase):
 	def setUp(self):
-		self.squeue = StackQueue()
+		self.mqueue = StackQueue()
 
 	def test_CheckEnqueueUsingPeek(self):
 		# Queue is FIFO, so first added item should stay as the peek value.
-		self.squeue.enqueue('1')
-		self.assertEqual(self.squeue.peek(), '1')
+		self.mqueue.enqueue('1')
+		self.assertEqual(self.mqueue.peek(), '1')
 
-		self.squeue.enqueue(2)
-		self.assertEqual(self.squeue.peek(), '1')
+		self.mqueue.enqueue(2)
+		self.assertEqual(self.mqueue.peek(), '1')
 
-		self.squeue.enqueue(3.0)
-		self.assertEqual(self.squeue.peek(), '1')
+		self.mqueue.enqueue(3.0)
+		self.assertEqual(self.mqueue.peek(), '1')
 
 	def test_EnqueueAndDequeue(self):
-		self.squeue.enqueue('1')
-		self.squeue.enqueue(2)
-		self.squeue.enqueue(3.0)
+		self.mqueue.enqueue('1')
+		self.mqueue.enqueue(2)
+		self.mqueue.enqueue(3.0)
 
-		self.assertEqual(self.squeue.dequeue(), '1')
-		self.assertEqual(self.squeue.dequeue(), 2)
-		self.assertEqual(self.squeue.dequeue(), 3.0)
-		self.assertEqual(self.squeue.dequeue(), None)
+		self.assertEqual(self.mqueue.dequeue(), '1')
+		self.assertEqual(self.mqueue.dequeue(), 2)
+		self.assertEqual(self.mqueue.dequeue(), 3.0)
+		self.assertEqual(self.mqueue.dequeue(), None)
+
+
+class TestDLListQueue(TestStackQueue):
+	def setUp(self):
+		self.mqueue = DLListQueue()
 
 
 if __name__ == '__main__':
 	# suite = unittest.TestLoader().loadTestsFromTestCase(TestLListStack)
-	suite = unittest.TestLoader().loadTestsFromTestCase(TestStackQueue)
+	suite = unittest.TestLoader().loadTestsFromTestCase(TestDLListQueue)
 	# suite = unittest.TestSuite([suite1, suite2])
 	# suite = suite1
 	# suite = unittest.TestSuite()
