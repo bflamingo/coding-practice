@@ -52,6 +52,8 @@ class LinkedList:
 			following.nextNode = Node(data)
 
 	def popHead(self):
+		if self.head == None:
+			return None
 		popped = self.head
 		self.head = self.head.nextNode
 		return popped
@@ -802,8 +804,8 @@ class TestDoublyLinkedList(unittest.TestCase):
 if __name__ == '__main__':
 	suite1 = unittest.TestLoader().loadTestsFromTestCase(TestLinkedList)
 	suite2 = unittest.TestLoader().loadTestsFromTestCase(TestDoublyLinkedList)
-	# suite = unittest.TestSuite([suite1, suite2])
-	suite = suite1
+	suite = unittest.TestSuite([suite1, suite2])
+	#suite = suite1
 	# suite = unittest.TestSuite()
 	# suite.addTest(TestDoublyLinkedList('test_append_nonempty_1'))
 	runner = unittest.TextTestRunner(verbosity=2)
