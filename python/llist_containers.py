@@ -79,6 +79,25 @@ class StackQueue:
 			return retval
 
 
+class QueueStack:
+	def __init__(self):
+		self.queue1 = DLListQueue()
+		self.queue2 = DLListQueue()
+
+	def push(self, data):
+		self.queue2.enqueue(data)
+		while self.queue1.peek() is not None:
+			self.queue2.enqueue(self.queue1.dequeue())
+		self.queue1, self.queue2 = self.queue2, self.queue1
+		return None
+
+	def pop(self):
+		return self.queue1.dequeue()
+
+	def peek(self):
+		return self.queue1.peek()
+
+
 class TestLListStack(unittest.TestCase):
 	def setUp(self):
 		self.stack = LListStack()
@@ -155,9 +174,13 @@ class TestDLListQueue(TestStackQueue):
 		self.mqueue = DLListQueue()
 
 
+class TestQueueStack(TestLListStack):
+	def setUp(self):
+		self.stack = QueueStack()
+
+
 if __name__ == '__main__':
-	# suite = unittest.TestLoader().loadTestsFromTestCase(TestLListStack)
-	suite = unittest.TestLoader().loadTestsFromTestCase(TestDLListQueue)
+	suite = unittest.TestLoader().loadTestsFromTestCase(TestQueueStack)
 	# suite = unittest.TestSuite([suite1, suite2])
 	# suite = suite1
 	# suite = unittest.TestSuite()

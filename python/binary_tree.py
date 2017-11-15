@@ -37,6 +37,7 @@ def findMaxDepthDFS(root, s=None):
     while s:
         current = s.pop()
         current_path.append(current)
+        print([node.value for node in current_path])
         
         ## if leaf, check current depth against max, then go back up.
         if current.right is None and current.left is None:
@@ -117,6 +118,14 @@ class TestTreeNode(unittest.TestCase):
         """
 
         root = TreeNode(0)
+        root.addLeft(1)
+        root.addRight(5)
+        root.left.addLeft(2)
+        root.left.addRight(3)
+        root.left.right.addRight(4)
+        root.right.addRight(6)
+
+        self.assertEqual(findMaxDepthDFS(root),3)
         
 
 
