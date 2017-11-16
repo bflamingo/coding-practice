@@ -1,4 +1,5 @@
 import unittest
+from collections import deque
 
 class TreeNode(object):
     def __init__(self, value):
@@ -23,13 +24,16 @@ class TreeNode(object):
             )
 
 
-
 class BinarySearchTree(object):
     def __init__(self,value):
         self.root = None
 
 
 def findMaxDepthDFS(root, s=None):
+    """ First attempt to find max depth non-recursively.
+    
+        Doesn't actually work though. BFS should be better.
+    """
     max_depth = -1 ## initialize, since root depth will be 0.
     s = []
     s.append(root)
@@ -53,6 +57,27 @@ def findMaxDepthDFS(root, s=None):
                 s.append(current.left)
         
     return max_depth
+
+def findMaxDepthBFS(root):
+    """ Non-recursive algorithm to find the max depth of a binary tree.
+
+        Algorithm works by traversing the tree with BFS, and converting it
+        to its implicit data structure representation as an array. Based
+        on the length of the array, we can determine the height using the
+        fact that the height of a full binary tree is 2**(h+1) - 1, and that
+        there are 2**h nodes in each level. This lets us compute a window of
+        all indices in a level, which we can use in reverse to find the depth
+        of a node given its index.
+    """
+
+    to_visit = deque()
+    arrayify = []
+    to_visit.append(root)
+
+    while to_visit:
+        current_node = to_visit.popleft()
+        arrayify.append(current_node.value)
+        
 
 
 
