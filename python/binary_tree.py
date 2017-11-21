@@ -24,9 +24,58 @@ class TreeNode(object):
             )
 
 
+class BSTNode:
+    def __init__(self, key, value):
+        self.key = key
+        self.value = [value]
+        self.left = None
+        self.right = None
+
+    def addLeft(self, key, value):
+        self.left = BSTNode(key, value)
+
+    def addRight(self, key, value):
+        self.right = BSTNode(key, value)
+
+
 class BinarySearchTree(object):
     def __init__(self,value):
         self.root = None
+
+    def insert(self, key, value):
+        if self.root is None:
+            self.root = BSTNode(key, value)
+
+        else:
+            current = self.root
+            while current is not None:
+                if key == current.key:
+                    current.append(value)
+                    return
+                else if key > current.key:
+                    current = current.right
+                else: # key < current.key
+                    current = current.left
+
+            current = BSTNode(key, value)
+
+        return
+
+    def search(self, key):
+        current = self.root
+
+        while current is not None:
+            if key == current.key:
+                return current
+            else if key > current.key:
+                current = current.right
+            else: # key < current.key
+                current = current.left
+
+        return None
+
+
+    def remove(self, key):
 
 
 def findMaxDepthDFS(root, s=None):
