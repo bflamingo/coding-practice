@@ -39,7 +39,7 @@ class BSTNode:
 
 
 class BinarySearchTree(object):
-    def __init__(self,value):
+    def __init__(self):
         self.root = None
 
     def insert(self, key, value):
@@ -47,15 +47,17 @@ class BinarySearchTree(object):
             self.root = BSTNode(key, value)
 
         else:
+            parent = None
             current = self.root
             while current is not None:
                 if key == current.key:
                     current.append(value)
                     return
-                else if key > current.key:
-                    current = current.right
+                elif key > current.key:
+                    parent, current = current, current.right
+                    
                 else: # key < current.key
-                    current = current.left
+                    parent, current = current, current.right
 
             current = BSTNode(key, value)
 
@@ -67,15 +69,52 @@ class BinarySearchTree(object):
         while current is not None:
             if key == current.key:
                 return current
-            else if key > current.key:
+            elif key > current.key:
                 current = current.right
             else: # key < current.key
                 current = current.left
 
         return None
 
+    def find_parent_of_max(self, node):
+        """ Maximum node in a subtree is the right-most node,
+            so we can iteratively traverse the right subtree
+            until we reach the end.
+        """
+        current_node = node
+        while current_node.right and current_node.right.right:
+            current_node = current_node.right
+        return current_node
 
     def remove(self, key):
+        ## Search for parent of node to delete
+        current_node = self.root
+        parent_node = None
+        while (current_node.key != key) and current_node is not None:
+            if key > current_node.key:
+                parent_node, current_node = current_node, current_node.right
+            else: # key < current_node.key
+                parent_node, current_node = current_node, current_node.left
+
+        if current_node is None:
+            return None # Key not present, nothing to remove.
+
+        if current_node.left and current_node.right:
+            in_order_pred = self.find_parent_of_max(current_node.left)
+            current_node.key, current_node.value = in_order_pred.key, in_order_pred.value
+            self.remove(in_order_pred)
+        elif current_node.left:
+            if current_node is parent_node.left:
+                parent_node.left = current_node.left
+            else:
+                parent_node.right = current_node.left
+        else: # current_node.right
+            if current_node is parent_node.left:
+                parent_node.left = current_node.right
+            else:
+                parent_node.right = current_node.right
+
+        return None
 
 
 def findMaxDepthDFS(root, s=None):
@@ -202,7 +241,64 @@ class TestTreeNode(unittest.TestCase):
         self.assertEqual(findMaxDepthDFS(root),3)
         
 
+class TestBST(unittest.TestCase):
+    def setUp(self):
+        self.bst = BinarySearchTree()
+
+    def test_insert_NoDuplicates(self):
+        """ Use insert to build basic BST. Diagram:
+                    10
+                    /\
+                   /  \
+                  /    \
+                 5      20
+                / \    /  \
+               3   7  15  25
+                     / 
+                    14
+        """
+
+        self.bst.insert(10,1)
+        self.bst.insert(5,2)
+        self.bst.insert(20,3)
+        self.bst.insert(3,4)
+        self.bst.insert(7,5)
+        self.bst.insert(15,6)
+        self.bst.insert(14,7)
+        self.bst.insert(25,8)
+
+        self.assertEqual(self.bst.root.key, 10)
+        self.assertEqual(self.bst.root.value, [1])
+
+        # left subtree
+        self.assertEqual(self.bst.root.left.key, 5)
+        self.assertEqual(self.bst.root.left.value, [2])
+
+        self.assertEqual(self.bst.root.left.left.key, 3)
+        self.assertEqual(self.bst.root.left.left.value, [4])
+
+        self.assertEqual(self.bst.root.left.right.key, 7)
+        self.assertEqual(self.bst.root.left.right.value, [5])
+
+        # right subtree
+        self.assertEqual(self.bst.root.right.key, 20)
+        self.assertEqual(self.bst.root.right.value, [3])
+
+        self.assertEqual(self.bst.root.right.left.key, 15)
+        self.assertEqual(self.bst.root.right.left.value, [6])
+
+        self.assertEqual(self.bst.root.right.left.left.key, 14)
+        self.assertEqual(self.bst.root.right.left.left.value, [7])
+
+        self.assertEqual(self.bst.root.right.right.key, 25)
+        self.assertEqual(self.bst.root.right.right.value, [8])
 
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2)
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestBST)
+    # suite = unittest.TestSuite([suite1, suite2])
+    # suite = suite1
+    # suite = unittest.TestSuite()
+    # suite.addTest(TestDoublyLinkedList('test_append_nonempty_1'))
+    runner = unittest.TextTestRunner(verbosity=2)
+    runner.run(suite)
