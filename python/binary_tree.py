@@ -51,17 +51,19 @@ class BinarySearchTree(object):
             current = self.root
             while current is not None:
                 if key == current.key:
-                    current.append(value)
+                    current.value.append(value)
                     return
                 elif key > current.key:
                     parent, current = current, current.right
-                    
+                    if current is None:
+                        #parent.right = BSTNode(key, value)
+                        parent.addRight(key, value)
                 else: # key < current.key
-                    parent, current = current, current.right
-
-            current = BSTNode(key, value)
-
-        return
+                    parent, current = current, current.left
+                    if current is None:
+                        #parent.left = BSTNode(key, value)
+                        parent.addLeft(key, value)
+        return None
 
     def search(self, key):
         current = self.root
@@ -76,13 +78,13 @@ class BinarySearchTree(object):
 
         return None
 
-    def find_parent_of_max(self, node):
+    def find_max(self, node):
         """ Maximum node in a subtree is the right-most node,
             so we can iteratively traverse the right subtree
             until we reach the end.
         """
         current_node = node
-        while current_node.right and current_node.right.right:
+        while current_node.right:
             current_node = current_node.right
         return current_node
 
@@ -95,24 +97,32 @@ class BinarySearchTree(object):
                 parent_node, current_node = current_node, current_node.right
             else: # key < current_node.key
                 parent_node, current_node = current_node, current_node.left
-
         if current_node is None:
             return None # Key not present, nothing to remove.
 
         if current_node.left and current_node.right:
-            in_order_pred = self.find_parent_of_max(current_node.left)
-            current_node.key, current_node.value = in_order_pred.key, in_order_pred.value
-            self.remove(in_order_pred)
+            in_order_pred = self.find_max(current_node.left)
+            temp_key,temp_val = in_order_pred.key, in_order_pred.value
+            self.remove(in_order_pred.key)
+            current_node.key, current_node.value = temp_key, temp_val
         elif current_node.left:
             if current_node is parent_node.left:
                 parent_node.left = current_node.left
             else:
                 parent_node.right = current_node.left
-        else: # current_node.right
+        elif current_node.right:
             if current_node is parent_node.left:
                 parent_node.left = current_node.right
             else:
                 parent_node.right = current_node.right
+        else: # is a leaf
+            if parent_node is None:
+                self.root = None
+            else:
+                if current_node is parent_node.left:
+                    parent_node.left = None
+                else:
+                    parent_node.right = None
 
         return None
 
@@ -246,7 +256,8 @@ class TestBST(unittest.TestCase):
         self.bst = BinarySearchTree()
 
     def test_insert_NoDuplicates(self):
-        """ Use insert to build basic BST. Diagram:
+        """ Use insert to build basic BST.
+        Diagram:
                     10
                     /\
                    /  \
@@ -292,6 +303,275 @@ class TestBST(unittest.TestCase):
 
         self.assertEqual(self.bst.root.right.right.key, 25)
         self.assertEqual(self.bst.root.right.right.value, [8])
+
+    def test_insert_WithDuplicates(self):
+        """ Use insert to build basic BST with duplicate key insertions.
+        Diagram:
+                    10
+                    /\
+                   /  \
+                  /    \
+                 5      20
+                / \    /  \
+               3   7  15  25
+                     / 
+                    14
+        """
+
+        self.bst.insert(10,1)
+        self.bst.insert(10,2)
+        
+        self.bst.insert(5,2)
+        
+        self.bst.insert(20,3)
+        self.bst.insert(20,4)
+        
+        self.bst.insert(3,4)
+        self.bst.insert(7,5)
+        self.bst.insert(15,6)
+        self.bst.insert(14,7)
+        self.bst.insert(25,8)
+
+        self.bst.insert(5,123)
+        self.bst.insert(14,456)
+
+        self.assertEqual(self.bst.root.key, 10)
+        self.assertEqual(self.bst.root.value, [1,2])
+
+        # left subtree
+        self.assertEqual(self.bst.root.left.key, 5)
+        self.assertEqual(self.bst.root.left.value, [2,123])
+
+        self.assertEqual(self.bst.root.left.left.key, 3)
+        self.assertEqual(self.bst.root.left.left.value, [4])
+
+        self.assertEqual(self.bst.root.left.right.key, 7)
+        self.assertEqual(self.bst.root.left.right.value, [5])
+
+        # right subtree
+        self.assertEqual(self.bst.root.right.key, 20)
+        self.assertEqual(self.bst.root.right.value, [3,4])
+
+        self.assertEqual(self.bst.root.right.left.key, 15)
+        self.assertEqual(self.bst.root.right.left.value, [6])
+
+        self.assertEqual(self.bst.root.right.left.left.key, 14)
+        self.assertEqual(self.bst.root.right.left.left.value, [7,456])
+
+        self.assertEqual(self.bst.root.right.right.key, 25)
+        self.assertEqual(self.bst.root.right.right.value, [8])
+
+    def test_remove_NoDuplicates(self):
+        """ Use insert to build basic BST, then remove some nodes.
+        Diagram before removal:
+                    10
+                    /\
+                   /  \
+                  /    \
+                 5      20
+                / \    /  \
+               3   7  15  25
+                     / 
+                    14
+        Step 1 remove (root):
+                    7
+                    /\
+                   /  \
+                  /    \
+                 5      20
+                /      /  \
+               3      15  25
+                     / 
+                    14
+        Step 2 remove (two children):
+                     7
+                    /\
+                   /  \
+                  /    \
+                 5      15
+                /      /  \
+               3      14  25
+        Step 3 remove (one child,left):
+                     7
+                    /\
+                   /  \
+                  /    \
+                 3      15
+                       /  \
+                      14  25
+        Step 4 remove (leaf):
+                     7
+                    /\
+                   /  \
+                  /    \
+                 3      15
+                          \
+                          25
+        Step 5 remove (one child, right):
+                     7
+                    /\
+                   /  \
+                  /    \
+                 3      25
+        Step 6: Remove til empty
+        """
+
+        self.bst.insert(10,1)
+        self.bst.insert(5,2)
+        self.bst.insert(20,3)
+        self.bst.insert(3,4)
+        self.bst.insert(7,5)
+        self.bst.insert(15,6)
+        self.bst.insert(14,7)
+        self.bst.insert(25,8)
+
+        ############################################################
+        # Step 1
+        ############################################################
+        self.bst.remove(10)
+
+        self.assertEqual(self.bst.root.key, 7)
+        self.assertEqual(self.bst.root.value, [5])
+
+        # left subtree
+        self.assertEqual(self.bst.root.left.key, 5)
+        self.assertEqual(self.bst.root.left.value, [2])
+
+        self.assertEqual(self.bst.root.left.left.key, 3)
+        self.assertEqual(self.bst.root.left.left.value, [4])
+
+        self.assertEqual(self.bst.root.left.right, None)
+
+        # right subtree
+        self.assertEqual(self.bst.root.right.key, 20)
+        self.assertEqual(self.bst.root.right.value, [3])
+
+        self.assertEqual(self.bst.root.right.left.key, 15)
+        self.assertEqual(self.bst.root.right.left.value, [6])
+
+        self.assertEqual(self.bst.root.right.left.left.key, 14)
+        self.assertEqual(self.bst.root.right.left.left.value, [7])
+
+        self.assertEqual(self.bst.root.right.right.key, 25)
+        self.assertEqual(self.bst.root.right.right.value, [8])
+
+
+        ############################################################
+        # Step 2
+        ############################################################
+        self.bst.remove(20)
+
+        self.assertEqual(self.bst.root.key, 7)
+        self.assertEqual(self.bst.root.value, [5])
+
+        # left subtree
+        self.assertEqual(self.bst.root.left.key, 5)
+        self.assertEqual(self.bst.root.left.value, [2])
+
+        self.assertEqual(self.bst.root.left.left.key, 3)
+        self.assertEqual(self.bst.root.left.left.value, [4])
+
+        self.assertEqual(self.bst.root.left.right, None)
+
+        # right subtree
+        self.assertEqual(self.bst.root.right.key, 15)
+        self.assertEqual(self.bst.root.right.value, [6])
+
+        self.assertEqual(self.bst.root.right.left.key, 14)
+        self.assertEqual(self.bst.root.right.left.value, [7])
+
+        self.assertEqual(self.bst.root.right.left.left, None)
+
+        self.assertEqual(self.bst.root.right.right.key, 25)
+        self.assertEqual(self.bst.root.right.right.value, [8])
+
+
+        ############################################################
+        # Step 3
+        ############################################################
+        self.bst.remove(5)
+
+        self.assertEqual(self.bst.root.key, 7)
+        self.assertEqual(self.bst.root.value, [5])
+
+        # left subtree
+        self.assertEqual(self.bst.root.left.key, 3)
+        self.assertEqual(self.bst.root.left.value, [4])
+
+        self.assertEqual(self.bst.root.left.left, None)
+
+        self.assertEqual(self.bst.root.left.right, None)
+
+        # right subtree
+        self.assertEqual(self.bst.root.right.key, 15)
+        self.assertEqual(self.bst.root.right.value, [6])
+
+        self.assertEqual(self.bst.root.right.left.key, 14)
+        self.assertEqual(self.bst.root.right.left.value, [7])
+
+        self.assertEqual(self.bst.root.right.right.key, 25)
+        self.assertEqual(self.bst.root.right.right.value, [8])
+
+
+        ############################################################
+        # Step 4
+        ############################################################
+        self.bst.remove(14)
+
+        self.assertEqual(self.bst.root.key, 7)
+        self.assertEqual(self.bst.root.value, [5])
+
+        # left subtree
+        self.assertEqual(self.bst.root.left.key, 3)
+        self.assertEqual(self.bst.root.left.value, [4])
+
+        # right subtree
+        self.assertEqual(self.bst.root.right.key, 15)
+        self.assertEqual(self.bst.root.right.value, [6])
+
+        self.assertEqual(self.bst.root.right.left, None)
+
+        self.assertEqual(self.bst.root.right.right.key, 25)
+        self.assertEqual(self.bst.root.right.right.value, [8])
+
+
+        ############################################################
+        # Step 5
+        ############################################################
+        self.bst.remove(15)
+
+        self.assertEqual(self.bst.root.key, 7)
+        self.assertEqual(self.bst.root.value, [5])
+
+        # left subtree
+        self.assertEqual(self.bst.root.left.key, 3)
+        self.assertEqual(self.bst.root.left.value, [4])
+
+        # right subtree
+        self.assertEqual(self.bst.root.right.key, 25)
+        self.assertEqual(self.bst.root.right.value, [8])
+
+        self.assertEqual(self.bst.root.right.right, None)
+
+
+        ############################################################
+        # Step 6
+        ############################################################
+        self.bst.remove(3)
+        self.bst.remove(25)
+
+        self.assertEqual(self.bst.root.key, 7)
+        self.assertEqual(self.bst.root.value, [5])
+
+        # left subtree
+        self.assertEqual(self.bst.root.left, None)
+
+        # right subtree
+        self.assertEqual(self.bst.root.right, None)
+
+        self.bst.remove(7)
+
+        self.assertEqual(self.bst.root, None)
 
 
 if __name__ == '__main__':
