@@ -35,11 +35,10 @@ def KMP(T,P):
 	tj = 0
 	while i <= len(T) - len(P) + 1:
 		for j in range(tj, len(P)):
-			print(P[j], T[i+j], j, i)
 			if P[j] == T[i+j]:
 				if j == len(P)-1: # match found
 					matches.append(i)
-					i = i + j
+					i = i + j - O[j-1]
 					tj = 0
 				else:	#do nothing, continue to next iteration
 					pass
@@ -65,6 +64,11 @@ P1 = "ABCDABD"
 T2 = "banananabanaba nabanana"
 P2 = "banana"
 
+T3 = "abcabcabcabc"
+P3 = "abcabc"
+
 P = "abeabdabeabe"
 
 print(KMP(T1,P1))
+print(KMP(T2,P2))
+print(KMP(T3,P3))
