@@ -127,55 +127,47 @@ class BinarySearchTree(object):
         return None
 
 
-def findMaxDepthDFS(root, s=None):
-    """ First attempt to find max depth non-recursively.
-    
-        Doesn't actually work though. BFS should be better.
-    """
-    max_depth = -1 ## initialize, since root depth will be 0.
-    s = []
-    s.append(root)
-    current_path = []
-    while s:
-        current = s.pop()
-        current_path.append(current)
-        print([node.value for node in current_path])
+def findMaxDepthDFS(root):
+    stack = [root]
+    depth = [0]
+    max_depth = 0
+    while stack:
+        v = stack.pop()
+        current_depth = depth.pop()
         
-        ## if leaf, check current depth against max, then go back up.
-        if current.right is None and current.left is None:
-            if len(current_path)-1 > max_depth:
-                max_depth = len(current_path)-1
-            current_path.pop()
-
-        else:
-            if current.right is not None:
-                s.append(current.right)
-
-            if current.left is not None:
-                s.append(current.left)
+        if current_depth > max_depth:
+            max_depth = current_depth
         
+        if v.right is not None:
+            stack.append(v.right)
+            depth.append(current_depth+1)
+        if v.left is not None:
+            stack.append(v.left)
+            depth.append(current_depth+1)
+
     return max_depth
 
 def findMaxDepthBFS(root):
-    """ Non-recursive algorithm to find the max depth of a binary tree.
+    queue = deque()
+    queue.append(root)
+    depth = deque()
+    depth.append(0)
+    max_depth = 0
+    while queue:
+        v = queue.popleft()
+        current_depth = depth.popleft()
 
-        Algorithm works by traversing the tree with BFS, and converting it
-        to its implicit data structure representation as an array. Based
-        on the length of the array, we can determine the height using the
-        fact that the height of a full binary tree is 2**(h+1) - 1, and that
-        there are 2**h nodes in each level. This lets us compute a window of
-        all indices in a level, which we can use in reverse to find the depth
-        of a node given its index.
-    """
+        if current_depth > max_depth:
+            max_depth = current_depth
 
-    to_visit = deque()
-    arrayify = []
-    to_visit.append(root)
+        if v.left is not None:
+            queue.append(v.left)
+            depth.append(current_depth+1)
+        if v.right is not None:
+            queue.append(v.right)
+            depth.append(current_depth+1)
 
-    while to_visit:
-        current_node = to_visit.popleft()
-        arrayify.append(current_node.value)
-        
+    return max_depth
 
 
 
@@ -574,8 +566,47 @@ class TestBST(unittest.TestCase):
         self.assertEqual(self.bst.root, None)
 
 
+class TestDFSandBFS(unittest.TestCase):
+    def setUp(self):
+        self.bst = BinarySearchTree()
+
+    def test_TypicalTree(self):
+        """ Test that max depth is 3 (root is zero)
+            Diagram:
+                        10
+                        /\
+                       /  \
+                      /    \
+                     5      20
+                    / \    /  \
+                   3   7  15  25
+                         / 
+                        14
+        """
+
+        self.bst.insert(10,1)
+        self.bst.insert(10,2)
+        
+        self.bst.insert(5,2)
+        
+        self.bst.insert(20,3)
+        self.bst.insert(20,4)
+        
+        self.bst.insert(3,4)
+        self.bst.insert(7,5)
+        self.bst.insert(15,6)
+        self.bst.insert(14,7)
+        self.bst.insert(25,8)
+
+        self.bst.insert(5,123)
+        self.bst.insert(14,456)
+
+        self.assertEqual(findMaxDepthDFS(self.bst.root), 3)
+        self.assertEqual(findMaxDepthBFS(self.bst.root), 3)
+
+
 if __name__ == '__main__':
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestBST)
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestDFSandBFS)
     # suite = unittest.TestSuite([suite1, suite2])
     # suite = suite1
     # suite = unittest.TestSuite()
