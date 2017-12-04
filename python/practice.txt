@@ -1,0 +1,116 @@
+def KMP_table_1(P):
+    # first table element is -1 to simplify loop later
+    # i'th entry of table corresponds to overlap of i-1th prefix of P
+    O = [-1]
+    O.extend([0 for _ in P])
+    for i in range(len(P)):
+        O[i+1] = O[i] + 1
+        while O[i+1] > 0 and P[i] != P[O[i+1] - 1]:
+            O[i+1] = O[O[i+1]-1] + 1
+
+    return O
+
+def KMP_search_1(T,P):
+    matches = []
+	i = 0
+	j_low = 0
+	O_table = KMP_table(P)
+    while i < len(T) - len(P) + 1
+        for j in range(j_low, len(P))
+            if T[i+j] == P[j]:
+            	if j == len(P):
+        	        matches.append(i)
+
+        	overlap = O_table[j]
+        	i = i + max(1, j-o)
+
+    return matches
+
+def naive_search(T,P):
+    matches = []
+    for i in range(0, len(T) - len(P) + 1):
+        for j in range(0, len(P)):
+            if j == len(P):
+                matches.append(i)
+            else:
+                break
+
+    return matches
+
+def DFS(node):
+    stack = [node]
+    depth = [0]
+    max_depth = 0
+    while stack:
+        v = stack.pop()
+        current_depth = depth.pop()
+        
+        if current_depth > max_depth:
+            max_depth = current_depth
+        
+        if v.right is not None:
+            stack.append(v.right)
+            depth.append(current_depth+1)
+        if v.left is not None:
+            stack.append(v.left)
+            depth.append(current_depth+1)
+
+    return max_depth
+
+from collections import deque
+def BFS(node):
+    queue = deque()
+    queue.append(node)
+    depth = deque()
+    depth.append(0)
+    while queue:
+        v = queue.popleft()
+        current_depth = depth.popleft()
+
+        if current_depth > max_depth:
+            max_depth = current_depth
+
+        if v.left is not None:
+            queue.append(v.left)
+        if v.right is not None:
+            queue.append(v.right)
+
+     return max_depth
+
+
+// words with only one instance of 'foo' as substring
+(?!(\b\w*foo\w*foo\w*\b))(\b\w*foo\w*\b)
+
+// phone number types
+\+?1? \d{3} \d{3} \d{4}		(+1 123 456 7890)
+\+?1?-\d{3}-\d{3}-\d{4}		(+1-123-456-7890)
+\(\d{3}\) ?\d{3} \d{4}		((123)456 7890 or (123)456 7890)
+
+// super general phone number matcher
+\+?1?[ .+-]?\(?\d{3}\)?[ .+-]?\d{3}[ .+-]?\d{4}
+
+// single words with at most 1 apostrophe in middle, not ending in s,t,ll
+\b[a-zA-Z]+'?[a-zA-Z&&[^stST(ll)(LL)]]\b
+
+
+// PYTHON REGEX SYNTAX
+import re
+pattern = re.compile(r'')
+words = pattern.finditer(source_string) /iterator
+for word in words:
+	found = word.group().lower()
+
+	// line by line file scanning
+	with open(file) as f:
+		for line in f:
+			words = pattern.finditer(line)
+
+
+p.split, p.findall
+
+
+0123456789012
+xxxabcabcxxx
+xxxabcabcxxx
+      abc...
+   012345
