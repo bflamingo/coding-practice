@@ -18,3 +18,4 @@ New:
 2. Graph representations
 3. Djikstra, A*
 4. Maybe go over Bellman-Ford, Floyd-Warshall
+5. Reverse a linked list
