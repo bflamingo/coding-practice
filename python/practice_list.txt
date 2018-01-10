@@ -1,0 +1,20 @@
+Things to practice/study
+
+Review:
+1.  Linked list (single/double)
+2.  Binary search tree
+3.  DFS, BFS
+4.  Stacks and queues
+5.  Merge sort **
+6.  Regex - phone numbers, individual words in sentences
+7.  Reading text from files
+8.  KMP substring search
+9.  Matrix rotation
+10. String manip - reversal, in-place reversal, python methods (split, search, find, index, etc...)
+11. Dictionary syntax
+
+New:
+1. Priority queue (min/max heap)
+2. Graph representations
+3. Djikstra, A*
+4. Maybe go over Bellman-Ford, Floyd-Warshall
