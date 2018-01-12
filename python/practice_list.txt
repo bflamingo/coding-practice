@@ -10,7 +10,7 @@ Review:
 7.  Reading text from files
 8.  KMP substring search
 9.  Matrix rotation
-10. String manip - reversal, in-place reversal, python methods (split, search, find, index, etc...)
+10. String manip - reversal, in-place reversal, anagram, python methods (split, search, find, index, etc...)
 11. Dictionary syntax
 
 New:

@@ -15,8 +15,22 @@ def DFS(node):
 	while stack:
 		v = stack.pop()
 		v.visited = True
-		for neighbor in node.adjacent:
-			if neighbor.visited = False:
-				stack.append(child)
+		for neighbor in v.adjacent:
+			if neighbor.visited is False:
+				stack.append(neighbor)
 
 	return None
+
+from collections import deque
+def BFS(node):
+	queue = deque()
+	queue.append(node)
+	while queue:
+		v = queue.popleft()
+		v.visited = True
+		for neighbor in v.adjacent:
+			if neighbor.visited is False:
+				queue.append(neighbor)
+
+	return None
+
