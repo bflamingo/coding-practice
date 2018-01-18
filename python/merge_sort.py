@@ -10,8 +10,8 @@ def merge(left, right):
 			result.append(right(right_idx))
 			right_idx += 1
 
-	result.extend(left[:left_idx])
-	result.extend(right[:right_idx])
+	result.extend(left[left_idx:])
+	result.extend(right[right_idx:])
 	return result
 
 def merge_sort(in_list):
