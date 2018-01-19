@@ -66,7 +66,7 @@ def BFS_discover(node):
 		visited[v] = True
 		all_nodes.append(v)
 		for neighbor in v.adjacent:
-			if visited[v] is False:
+			if neighbor not in visited:
 				queue.append(neighbor)
 
 	return all_nodes
@@ -109,3 +109,43 @@ def dijkstra(source):
 
 
 
+
+
+
+
+
+class TestBFSDiscovery(unittest.TestCase):
+
+	def test_BFSDiscoverySquareGraph(self):
+		A = Node('A')
+		B = Node('B')
+		C = Node('C')
+		D = Node('D')
+
+		A.add_adjacent(B,1)
+		A.add_adjacent(C,1)
+		B.add_adjacent(D,1)
+		C.add_adjacent(D,1)
+
+		discovered = BFS_discover(A)
+
+		self.assertTrue(A in discovered)
+		self.assertTrue(B in discovered)
+		self.assertTrue(C in discovered)
+		self.assertTrue(D in discovered)
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+	suite = unittest.TestLoader().loadTestsFromTestCase(TestBFSDiscovery)
+	# suite = unittest.TestSuite([suite1, suite2])
+	# suite = suite1
+	# suite = unittest.TestSuite()
+	# suite.addTest(TestDoublyLinkedList('test_append_nonempty_1'))
+	runner = unittest.TextTestRunner(verbosity=2)
+	runner.run(suite)
